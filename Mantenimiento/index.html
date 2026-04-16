@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mantenimiento Industrial | Control de Cambios</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="container hero">
+    <h1>Control de Cambios de Mantenimiento</h1>
+    <p class="subtitle">Sistema directo sin usuarios: registra, consulta, evidencia fotografica y PDF.</p>
+  </header>
+
+  <main class="container app-main">
+    <section id="configNotice" class="card notice hidden">
+      Configura SUPABASE_URL y SUPABASE_ANON_KEY antes de usar el sistema.
+    </section>
+
+    <section id="appSection" class="hidden">
+      <article class="card toolbar">
+        <div>
+          <h2 id="welcomeTitle">Panel General</h2>
+          <p id="roleLine">Captura, consulta y exporta informacion de mantenimiento.</p>
+        </div>
+        <div class="toolbar-actions">
+          <button id="refreshBtn" type="button" class="btn-secondary">Actualizar</button>
+        </div>
+      </article>
+
+      <div class="app-layout">
+        <section class="card">
+          <h2 align="center">Registros de Bitacora</h2>
+          <form id="maintenanceForm" class="maintenance-form">
+            <div>
+              <label for="fecha">Fecha de reparacion</label>
+              <input id="fecha" name="fecha" type="date" required />
+            </div>
+            <div>
+              <label for="fecha_fabricacion">Fecha de fabricacion</label>
+              <input id="fecha_fabricacion" name="fecha_fabricacion" type="date" />
+            </div>
+            <div>
+              <label for="tecnico">Tecnico</label>
+              <select id="tecnico" name="tecnico" required>
+                <option value="">Selecciona...</option>
+                <option>Eduardo Rubio Chavez</option>
+                <option>Gabriel Jesus figuera Zuñiga</option>
+                <option>Emmanuel Vega Vega</option>
+                <option>Daniel Velazquez Lozano</option>
+              </select>
+            </div>
+            <div>
+              <label for="equipo">Economico unidad:</label>
+              <select id="equipo" name="equipo" required>
+                <option value="">Selecciona...</option>
+                <option>QI-091</option>
+                <option>QI-144</option>
+                <option>QI-158</option>
+                <option>QI-159</option>
+                <option>QI-163</option>
+                <option>QI-170</option>
+                <option>QI-178</option>
+                <option>QI-179</option>
+                <option>QI-193</option>
+                <option>QI-201</option>
+                <option>QI-202</option>
+                <option>QI-769</option>
+                <option>QI-770</option>
+                <option>QI-799</option>
+                <option>QI-1396</option>
+                <option>QI-1397</option>
+                <option>QI-1439</option>
+                <option>QI-1697</option>
+                <option>QI-1698</option>
+                <option>QI-1699</option>
+                <option>QI-1700</option>
+                <option>QI-1701</option>
+                <option>QI-1703</option>
+                <option>QI-1752</option>
+                <option>QI-1823</option>
+                <option>QI-1927</option>
+                <option>QI-1934</option>
+                <option>QI-1943</option>
+                <option>QI-1944</option>
+                <option>QI-2029</option>
+                <option>QI-2129</option>
+                <option>QI-2130</option>
+                <option>QI-2131</option>
+                <option>QI-2134</option>
+                <option>QI-2329</option>
+                <option>QI-2330</option>
+                <option>QI-2357</option>
+                <option>QI-2338</option>
+                <option>QI-2418</option>
+                <option>QI-2456</option>
+                <option>QI-2536</option>
+                <option>QI-2648</option>
+                <option>QI-2662</option>
+                <option>QI-2907</option>
+                <option>QI-3052</option>
+                <option>QI-3053</option>
+                <option>QI-3054</option>
+                <option>QI-3055</option>
+              </select>
+            </div>
+            <div>
+              <label for="marca">Marca</label>
+              <input id="marca" name="marca" type="text" required />
+            </div>
+            <div>
+              <label for="modelo">Modelo</label>
+              <input id="modelo" name="modelo" type="text" required />
+            </div>
+            <div>
+              <label for="serie">Serie</label>
+              <input id="serie" name="serie" type="text" required />
+            </div>
+            <div>
+              <label for="folio_preview">Folio (automatico)</label>
+              <input id="folio_preview" type="text" readonly />
+            </div>
+            <div>
+              <label for="hora_inicio_preview">Hora de inicio (automatico)</label>
+              <input id="hora_inicio_preview" type="time" readonly />
+            </div>
+            <div>
+              <label for="hora_termino">Hora de termino</label>
+              <input id="hora_termino" name="hora_termino" type="time" required />
+            </div>
+            <div class="full">
+              <label for="pieza">Pieza cambiada</label>
+              <select id="pieza" name="pieza"></select>
+              <div class="piece-add-row">
+                <input id="pieza_cantidad" type="number" min="1" value="1" />
+                <button id="addPieceBtn" type="button" class="btn-secondary btn-compact">Agregar pieza</button>
+              </div>
+              <small class="field-help">Selecciona pieza, define cantidad y pulsa "Agregar pieza" (máximo 5 tipos de pieza).</small>
+              <div id="selectedPieces" class="selected-pieces" aria-live="polite"></div>
+            </div>
+            <div>
+              <label for="cantidad">Cantidad total</label>
+              <input id="cantidad" name="cantidad" type="number" min="1" value="1" required readonly />
+            </div>
+            <div>
+              <label for="estado">Tipo de mantenimiento</label>
+              <select id="estado" name="estado" required>
+                <option value="">Selecciona...</option>
+                <option>Preventivo: (Tareas programadas para evitar fallos)
+                  <option>Predictivo: (Monitoreo basado en condición)</option>
+                  <option>Correctivo: (Reparaciones tras una avería)</option>
+                  <option>Modificación / Mejora: (Instalación de componentes que no existían)</option>
+                  <option>Alta de Activo: (Para la instalación de equipos completamente nuevos)</option>
+                </option>
+
+
+              </select>
+            </div>
+            <div class="full">
+              <label for="evidencia">Evidencia fotografica</label>
+              <input id="evidencia" name="evidencia" type="file" accept="image/*" multiple />
+              <small class="field-help">Puedes subir hasta 4 fotos por registro.</small>
+            </div>
+            <div id="previewGallery" class="full preview-gallery hidden" aria-live="polite">
+            </div>
+            <div class="full">
+              <label for="notas">Notas</label>
+              <textarea id="notas" name="notas" placeholder="Detalles de la intervencion"></textarea>
+            </div>
+            <div class="full">
+              <button type="submit">Guardar registro y abrir formato de impresion</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="card history-panel">
+            <div class="history-topbar">
+              <h2>Historial</h2>
+              <div class="history-actions">
+                <button id="exportBtn" type="button" class="btn-secondary btn-compact">Descargar Excel</button>
+                <button id="clearBtn" type="button" class="btn-danger btn-compact">Borrar registros</button>
+              </div>
+            </div>
+
+          <div id="adminFilters" class="filters">
+            <div>
+              <label for="filterTecnico">Filtrar por tecnico</label>
+              <input id="filterTecnico" type="text" placeholder="Nombre tecnico" />
+            </div>
+            <div>
+              <label for="filterFrom">Fecha desde</label>
+              <input id="filterFrom" type="date" />
+            </div>
+            <div>
+              <label for="filterTo">Fecha hasta</label>
+              <input id="filterTo" type="date" />
+            </div>
+          </div>
+
+          <div class="column-tabs mobile-scroll" role="tablist" aria-label="Vista de columnas">
+            <button type="button" class="tab-btn active" data-tab="all">Todo</button>
+            <button type="button" class="tab-btn" data-tab="general">General</button>
+            <button type="button" class="tab-btn" data-tab="equipo">Equipo</button>
+            <button type="button" class="tab-btn" data-tab="mantenimiento">Mantenimiento</button>
+            <button type="button" class="tab-btn" data-tab="evidencia">Evidencia</button>
+          </div>
+            <div class="table-wrap history-table-wrap mobile-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th class="col-general">Fecha reparacion</th>
+                  <th class="col-general">Fecha fabricacion</th>
+                  <th class="col-general">Folio</th>
+                  <th class="col-general">OT</th>
+                  <th class="col-general">H. Inicio</th>
+                  <th class="col-general">H. Termino</th>
+                  <th class="col-general">Tecnico</th>
+                  <th class="col-equipo">Unidad</th>
+                  <th class="col-equipo">Marca</th>
+                  <th class="col-equipo">Modelo</th>
+                  <th class="col-equipo">Serie</th>
+                  <th class="col-mantenimiento">Pieza</th>
+                  <th class="col-mantenimiento">Cant.</th>
+                    <th class="col-mantenimiento">Tipo</th>
+                    <th class="col-evidencia">Evidencia</th>
+                    <th class="col-evidencia">Notas</th>
+                    <th class="col-evidencia">PDF</th>
+                  </tr>
+                </thead>
+                <tbody id="recordsBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <p id="statusMsg" class="status"></p>
+  </main>
+
+  <footer class="container">Desarrollado por Ing Jesus Fonseca.</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="templates/pdf-format-gen0426.js"></script>
+  <script>
+    const SUPABASE_URL = "https://iukhcmwqsxjybovkpxhm.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_Doj-L2g49RDaf1QFyE1Y9w_cqAs8Rbk";
+    const TABLE_NAME = "registros_mantenimiento";
+    const EVIDENCE_BUCKET = "evidencias_mantenimiento";
+
+    const configNotice = document.getElementById("configNotice");
+    const appSection = document.getElementById("appSection");
+    const statusMsg = document.getElementById("statusMsg");
+    const maintenanceForm = document.getElementById("maintenanceForm");
+    const recordsBody = document.getElementById("recordsBody");
+    const filterTecnico = document.getElementById("filterTecnico");
+    const filterFrom = document.getElementById("filterFrom");
+    const filterTo = document.getElementById("filterTo");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const exportBtn = document.getElementById("exportBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const columnTabs = Array.from(document.querySelectorAll(".tab-btn"));
+    const piezaSelect = document.getElementById("pieza");
+    const piezaCantidadInput = document.getElementById("pieza_cantidad");
+    const addPieceBtn = document.getElementById("addPieceBtn");
+    const selectedPiecesEl = document.getElementById("selectedPieces");
+    const cantidadInput = document.getElementById("cantidad");
+    const evidenceInput = document.getElementById("evidencia");
+    const previewGallery = document.getElementById("previewGallery");
+    const fechaInput = document.getElementById("fecha");
+    const fechaFabricacionInput = document.getElementById("fecha_fabricacion");
+    const folioPreview = document.getElementById("folio_preview");
+    const horaInicioPreview = document.getElementById("hora_inicio_preview");
+    const horaTerminoInput = document.getElementById("hora_termino");
+
+    const today = new Date().toISOString().slice(0, 10);
+    fechaInput.value = today;
+    folioPreview.value = "";
+    horaInicioPreview.value = "";
+    let currentRecords = [];
+    let selectedPieces = [];
+
+    function isConfigured() {
+      return !SUPABASE_URL.includes("PEGA_AQUI") && !SUPABASE_ANON_KEY.includes("PEGA_AQUI");
+    }
+
+    function setStatus(message, isError = false) {
+      statusMsg.textContent = message || "";
+      statusMsg.classList.toggle("error", isError);
+    }
+
+    const client = isConfigured() ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error("No se pudo leer la imagen."));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function safeName(text) {
+      return String(text || "registro").replace(/[^\w\-]+/g, "_").slice(0, 40);
+    }
+
+    function blobToDataUrl(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error("No se pudo convertir la imagen."));
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    async function urlToDataUrl(url) {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("No se pudo descargar evidencia.");
+      const blob = await response.blob();
+      return blobToDataUrl(blob);
+    }
+
+    async function getEvidenceDataUrlsFromRecord(record) {
+      const list = Array.isArray(record.evidencia_urls) ? [...record.evidencia_urls] : [];
+      if (record.evidencia_url && !list.includes(record.evidencia_url)) {
+        list.unshift(record.evidencia_url);
+      }
+      const unique = [...new Set(list.filter(Boolean))].slice(0, 4);
+      const converted = await Promise.all(
+        unique.map(async (src) => {
+          if (/^data:image\//i.test(src)) return src;
+          try {
+            return await urlToDataUrl(src);
+          } catch (_) {
+            return null;
+          }
+        })
+      );
+      return converted.filter(Boolean);
+    }
+
+    function pad(n) {
+      return String(n).padStart(2, "0");
+    }
+
+    function getTimeHHMM(baseDate = new Date()) {
+      return `${pad(baseDate.getHours())}:${pad(baseDate.getMinutes())}`;
+    }
+
+    function buildAutoIds(baseDate = new Date()) {
+      const y = baseDate.getFullYear();
+      const m = pad(baseDate.getMonth() + 1);
+      const d = pad(baseDate.getDate());
+      const hh = pad(baseDate.getHours());
+      const mm = pad(baseDate.getMinutes());
+      const ss = pad(baseDate.getSeconds());
+      const stamp = `${y}${m}${d}${hh}${mm}${ss}`;
+      const folio6 = String(baseDate.getTime() % 1000000).padStart(6, "0");
+      return {
+        ot_no: `OT-${stamp}`,
+        folio: folio6
+      };
+    }
+
+    function refreshAutoPreview() {
+      const now = new Date();
+      const ids = buildAutoIds(now);
+      folioPreview.value = ids.folio;
+      horaInicioPreview.value = getTimeHHMM(now);
+    }
+
+    function buildPiecesCatalog() {
+      return [
+        "Medidor magnetel ROCHESTER",
+        "Válvula máximo llenado de 1/4\" REGO",
+        "Manómetro de 0-21 kg/cm^2 METRON",
+        "Termómetro de 1/4\" de -50 a 50 °C METRON",
+        "Válvula de seguridad 3\" 250 PSIG",
+        "Válvula de seguridad 2\" 250 PSIG",
+        "Válvula interna de 2\"",
+        "Actuador neumático REGO",
+        "No retroceso de 3/4\" REGO",
+        "No retroceso de 1 1/4\" REGO",
+        "Válvula By-Pass de 1 1/4\" BLACKMER / CORKEN",
+        "Válvula de aguja de 1/4\" ACERO",
+        "Válvula de globo de 3/4\" REGO",
+        "Carrete para manguera PYPESA",
+        "Válvula tipo bola roscada de 2\" WORCESTER",
+        "Válvula tipo bola roscada de 1 1/4\" WORCESTER",
+        "Válvula tipo bola roscada de 1\" WORCESTER",
+        "Manguera para carrete 3/4\" x61 GATES",
+        "Manguera para carrete 1\" x61 GATES",
+        "Medidor 1 1/2\" RED SEAL (sin registro)",
+        "Registro electrónico RI 505 PEGASUS",
+        "Bomba 2\" BLACKMER / Bomba 2\" CORKEN",
+        "Filtro tipo sarco roscado 2\"",
+        "Manguera 2\" GATES 2 m",
+        "Manguera 1 1/4\" GATES (2 m)",
+        "Manguera 1\" GATES 2 m",
+        "Válvula para retorno de vapores 1 1/4\" REGO",
+        "Válvula de cierre rápido 1\" pérdida mínima REGO",
+        "Válvula doble check 3\" REGO (76x84 acmé)",
+        "Unión giratoria 1\" x 90° PYPESA",
+        "Válvula solenoide 1\" 12V APE SKINNER",
+        "Cilindro de aire para sistema neumático y embrague"
+      ];
+    }
+
+    function populatePiecesSelect() {
+      const pieces = buildPiecesCatalog();
+      piezaSelect.innerHTML = `<option value="">Selecciona...</option>${pieces
+        .map((piece) => `<option value="${piece.replace(/"/g, "&quot;")}">${piece}</option>`)
+        .join("")}`;
+    }
+
+    function getSelectedPieces() {
+      return selectedPieces.slice();
+    }
+
+    function updateTotalQuantity() {
+      const total = selectedPieces.reduce((acc, item) => acc + Number(item.qty || 0), 0);
+      cantidadInput.value = total > 0 ? String(total) : "1";
+    }
+
+    function renderSelectedPieces() {
+      if (!selectedPieces.length) {
+        selectedPiecesEl.innerHTML = `<span class="selected-empty">Sin piezas agregadas</span>`;
+        updateTotalQuantity();
+        return;
+      }
+      selectedPiecesEl.innerHTML = selectedPieces
+        .map(
+          (piece, idx) =>
+            `<button type="button" class="piece-chip" data-piece-index="${idx}" title="Quitar pieza">${piece.name} (x${piece.qty}) <span aria-hidden="true">×</span></button>`
+        )
+        .join("");
+      updateTotalQuantity();
+    }
+
+    function addPieceFromDropdown() {
+      const piece = (piezaSelect.value || "").trim();
+      if (!piece) return;
+      const qty = Math.max(1, Number(piezaCantidadInput.value) || 1);
+      const existingIndex = selectedPieces.findIndex((item) => item.name === piece);
+      if (existingIndex >= 0) {
+        selectedPieces[existingIndex].qty += qty;
+      } else {
+        if (selectedPieces.length >= 5) {
+          setStatus("Máximo 5 piezas por formato.", true);
+          piezaSelect.value = "";
+          return;
+        }
+        selectedPieces.push({ name: piece, qty });
+      }
+      piezaSelect.value = "";
+      piezaCantidadInput.value = "1";
+      renderSelectedPieces();
+    }
+
+    function resetCaptureForm() {
+      maintenanceForm.reset();
+      selectedPieces = [];
+      piezaCantidadInput.value = "1";
+      fechaInput.value = today;
+      fechaFabricacionInput.value = "";
+      refreshAutoPreview();
+      renderSelectedPieces();
+      previewGallery.innerHTML = "";
+      previewGallery.classList.add("hidden");
+    }
+
+
+    async function uploadEvidence(file, idx = 0) {
+      const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+      const path = `registros/${Date.now()}_${idx}_${safeName(file.name)}.${ext}`;
+      const { error } = await client.storage.from(EVIDENCE_BUCKET).upload(path, file, { upsert: false });
+      if (error) throw error;
+      const { data } = client.storage.from(EVIDENCE_BUCKET).getPublicUrl(path);
+      return data.publicUrl;
+    }
+
+    async function loadRecords() {
+      let query = client
+        .from(TABLE_NAME)
+        .select("id, fecha, fecha_fabricacion, folio, ot_no, hora_inicio, hora_termino, tecnico, equipo, marca, modelo, serie, pieza, cantidad, estado, notas, evidencia_url, evidencia_urls")
+        .order("fecha", { ascending: false })
+        .order("id", { ascending: false });
+
+      const tecnico = filterTecnico.value.trim();
+      if (tecnico) query = query.ilike("tecnico", `%${tecnico}%`);
+      if (filterFrom.value) query = query.gte("fecha", filterFrom.value);
+      if (filterTo.value) query = query.lte("fecha", filterTo.value);
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data || [];
+    }
+
+    function renderRecords(records) {
+      recordsBody.innerHTML = "";
+      if (!records.length) {
+        recordsBody.innerHTML = '<tr><td colspan="17">No hay registros para los filtros seleccionados.</td></tr>';
+        return;
+      }
+
+      records.forEach((r, index) => {
+        const tr = document.createElement("tr");
+        const evidenceList = Array.isArray(r.evidencia_urls) ? r.evidencia_urls : [];
+        const firstEvidence = evidenceList[0] || r.evidencia_url || "";
+        const evidencia = firstEvidence
+          ? `<a href="${firstEvidence}" target="_blank" rel="noopener"><img class="thumb" src="${firstEvidence}" alt="Evidencia" /></a>${evidenceList.length > 1 ? `<div>${evidenceList.length} imagenes</div>` : ""}`
+          : "-";
+
+        tr.innerHTML = `
+          <td class="col-general">${r.fecha || "-"}</td>
+          <td class="col-general">${r.fecha_fabricacion || "-"}</td>
+          <td class="col-general">${r.folio || "-"}</td>
+          <td class="col-general">${r.ot_no || "-"}</td>
+          <td class="col-general">${r.hora_inicio || "-"}</td>
+          <td class="col-general">${r.hora_termino || "-"}</td>
+          <td class="col-general">${r.tecnico || "-"}</td>
+          <td class="col-equipo">${r.equipo || "-"}</td>
+          <td class="col-equipo">${r.marca || "-"}</td>
+          <td class="col-equipo">${r.modelo || "-"}</td>
+          <td class="col-equipo">${r.serie || "-"}</td>
+          <td class="col-mantenimiento">${r.pieza || "-"}</td>
+          <td class="col-mantenimiento">${r.cantidad ?? "-"}</td>
+            <td class="col-mantenimiento">${r.estado || "-"}</td>
+            <td class="col-evidencia">${evidencia}</td>
+            <td class="notes col-evidencia">${r.notas || "-"}</td>
+            <td class="col-evidencia"><button type="button" class="btn-secondary btn-compact print-row-btn" data-row-index="${index}">Imprimir PDF</button></td>
+          `;
+        recordsBody.appendChild(tr);
+      });
+    }
+
+    function applyColumnTab(tab) {
+      const allowed = tab === "all" ? [] : [`col-${tab}`];
+      document.querySelectorAll("table th, table td").forEach((cell) => {
+        const isDataCol = /col-(general|equipo|mantenimiento|evidencia)/.test(cell.className);
+        if (!isDataCol) return;
+        const visible = tab === "all" || allowed.some((name) => cell.classList.contains(name));
+        cell.classList.toggle("is-hidden-col", !visible);
+      });
+    }
+
+    columnTabs.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        columnTabs.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        applyColumnTab(btn.dataset.tab || "all");
+      });
+    });
+
+    async function refreshData() {
+      try {
+        currentRecords = await loadRecords();
+        renderRecords(currentRecords);
+      } catch (error) {
+        setStatus(`Error al cargar registros: ${error.message}`, true);
+      }
+    }
+
+    evidenceInput.addEventListener("change", async () => {
+      previewGallery.innerHTML = "";
+      const files = Array.from(evidenceInput.files || []);
+      if (!files.length) {
+        previewGallery.classList.add("hidden");
+        return;
+      }
+      try {
+        const previews = await Promise.all(files.slice(0, 4).map((file) => fileToDataUrl(file)));
+        previews.forEach((src, i) => {
+          const img = document.createElement("img");
+          img.src = src;
+          img.alt = `Vista previa ${i + 1}`;
+          img.className = "preview";
+          previewGallery.appendChild(img);
+        });
+        previewGallery.classList.remove("hidden");
+      } catch (error) {
+        setStatus(error.message, true);
+      }
+    });
+
+    addPieceBtn.addEventListener("click", () => {
+      addPieceFromDropdown();
+    });
+
+    selectedPiecesEl.addEventListener("click", (event) => {
+      const chip = event.target.closest(".piece-chip");
+      if (!chip) return;
+      const idx = Number(chip.dataset.pieceIndex);
+      if (Number.isNaN(idx) || idx < 0 || idx >= selectedPieces.length) return;
+      selectedPieces.splice(idx, 1);
+      renderSelectedPieces();
+    });
+
+    recordsBody.addEventListener("click", async (event) => {
+      const btn = event.target.closest(".print-row-btn");
+      if (!btn) return;
+      const idx = Number(btn.dataset.rowIndex);
+      if (Number.isNaN(idx) || idx < 0 || idx >= currentRecords.length) return;
+
+      const previewTab = window.open("", "_blank");
+      if (!previewTab) {
+        setStatus("Activa pop-ups para abrir el formato de impresión.", true);
+        return;
+      }
+
+      btn.disabled = true;
+      try {
+        const record = currentRecords[idx];
+        const evidenceDataUrls = await getEvidenceDataUrlsFromRecord(record);
+        await window.maintenancePdfTemplate.buildPdf(record, evidenceDataUrls, {
+          defaultDate: today,
+          previewTab
+        });
+        setStatus("Formato abierto para impresión.");
+      } catch (error) {
+        if (previewTab && !previewTab.closed) previewTab.close();
+        setStatus(`No se pudo generar el PDF: ${error.message}`, true);
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    maintenanceForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      setStatus("");
+      const previewTab = window.open("", "_blank");
+
+      const formData = new FormData(maintenanceForm);
+      const record = Object.fromEntries(formData.entries());
+      delete record.evidencia;
+      const selectedPiecesList = getSelectedPieces();
+      if (!selectedPiecesList.length) {
+        if (previewTab && !previewTab.closed) previewTab.close();
+        setStatus("Selecciona al menos una pieza cambiada.", true);
+        return;
+      }
+      record.pieza = selectedPiecesList.map((item) => `${item.name} (x${item.qty})`).join(", ");
+      const ids = buildAutoIds();
+      record.ot_no = ids.ot_no;
+      record.folio = ids.folio;
+      record.hora_inicio = getTimeHHMM();
+      record.hora_termino = record.hora_termino || horaTerminoInput.value;
+      record.cantidad = selectedPiecesList.reduce((acc, item) => acc + Number(item.qty || 0), 0);
+      record.notas = record.notas || null;
+      record.fecha_fabricacion = record.fecha_fabricacion || null;
+
+      const files = Array.from(evidenceInput.files || []);
+      let evidenceDataUrls = [];
+      let evidencePublicUrls = [];
+      if (files.length) {
+        try {
+          evidenceDataUrls = await Promise.all(files.slice(0, 4).map((file) => fileToDataUrl(file)));
+          evidencePublicUrls = await Promise.all(files.slice(0, 4).map((file, idx) => uploadEvidence(file, idx)));
+        } catch (error) {
+          if (evidenceDataUrls.length) {
+            evidencePublicUrls = [...evidenceDataUrls];
+            setStatus("Storage no disponible. Evidencia guardada en base64.", true);
+          } else {
+            setStatus(`No se pudo procesar la evidencia: ${error.message}`, true);
+            return;
+          }
+        }
+      }
+      record.evidencia_urls = evidencePublicUrls;
+      record.evidencia_url = evidencePublicUrls[0] || null;
+
+      const { error } = await client.from(TABLE_NAME).insert(record);
+      if (error) {
+        setStatus(`Error al guardar: ${error.message}`, true);
+        return;
+      }
+
+      resetCaptureForm();
+      await window.maintenancePdfTemplate.buildPdf(record, evidenceDataUrls, {
+        defaultDate: today,
+        previewTab
+      });
+      setStatus("Registro guardado. Formato listo para imprimir.");
+      await refreshData();
+    });
+
+    refreshBtn.addEventListener("click", async () => {
+      await refreshData();
+      setStatus("Datos actualizados.");
+    });
+
+    exportBtn.addEventListener("click", () => {
+      if (!currentRecords.length) {
+        setStatus("No hay registros para exportar.", true);
+        return;
+      }
+
+      const rows = currentRecords.map((r) => ({
+        Fecha_Reparacion: r.fecha,
+        Fecha_Fabricacion: r.fecha_fabricacion || "",
+        Folio: r.folio || "",
+        Orden_Trabajo: r.ot_no || "",
+        Hora_Inicio: r.hora_inicio || "",
+        Hora_Termino: r.hora_termino || "",
+        Tecnico: r.tecnico,
+        Unidad: r.equipo,
+        Marca: r.marca || "",
+        Modelo: r.modelo || "",
+        Serie: r.serie || "",
+        Pieza: r.pieza,
+        Cantidad: r.cantidad,
+        Tipo_Mantenimiento: r.estado,
+        Evidencia_URL: r.evidencia_url || "",
+        Evidencias: Array.isArray(r.evidencia_urls) ? r.evidencia_urls.join(" | ") : "",
+        Notas: r.notas || ""
+      }));
+
+      const workbook = XLSX.utils.book_new();
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Cambios");
+      XLSX.writeFile(workbook, `cambios_mantenimiento_${today}.xlsx`);
+      setStatus("Archivo Excel descargado.");
+    });
+
+    clearBtn.addEventListener("click", async () => {
+      if (!confirm("Seguro que deseas borrar todos los registros?")) return;
+      const { error } = await client.from(TABLE_NAME).delete().not("id", "is", null);
+      if (error) {
+        setStatus(`Error al borrar: ${error.message}`, true);
+        return;
+      }
+      setStatus("Registros eliminados.");
+      await refreshData();
+    });
+
+    if (!isConfigured()) {
+      configNotice.classList.remove("hidden");
+      appSection.classList.add("hidden");
+    } else {
+      appSection.classList.remove("hidden");
+      populatePiecesSelect();
+      renderSelectedPieces();
+      refreshAutoPreview();
+      setInterval(refreshAutoPreview, 30000);
+      applyColumnTab("all");
+      refreshData();
+    }
+  </script>
+</body>
+</html>
