@@ -50,60 +50,93 @@
                 <option>Daniel Velazquez Lozano</option>
               </select>
             </div>
-            <div>
-              <label for="equipo">Economico unidad:</label>
-              <select id="equipo" name="equipo" required>
-                <option value="">Selecciona...</option>
-                <option>QI-091</option>
-                <option>QI-144</option>
-                <option>QI-158</option>
-                <option>QI-159</option>
-                <option>QI-163</option>
-                <option>QI-170</option>
-                <option>QI-178</option>
-                <option>QI-179</option>
-                <option>QI-193</option>
-                <option>QI-201</option>
-                <option>QI-202</option>
-                <option>QI-769</option>
-                <option>QI-770</option>
-                <option>QI-799</option>
-                <option>QI-1396</option>
-                <option>QI-1397</option>
-                <option>QI-1439</option>
-                <option>QI-1697</option>
-                <option>QI-1698</option>
-                <option>QI-1699</option>
-                <option>QI-1700</option>
-                <option>QI-1701</option>
-                <option>QI-1703</option>
-                <option>QI-1752</option>
-                <option>QI-1823</option>
-                <option>QI-1927</option>
-                <option>QI-1934</option>
-                <option>QI-1943</option>
-                <option>QI-1944</option>
-                <option>QI-2029</option>
-                <option>QI-2129</option>
-                <option>QI-2130</option>
-                <option>QI-2131</option>
-                <option>QI-2134</option>
-                <option>QI-2329</option>
-                <option>QI-2330</option>
-                <option>QI-2357</option>
-                <option>QI-2338</option>
-                <option>QI-2418</option>
-                <option>QI-2456</option>
-                <option>QI-2536</option>
-                <option>QI-2648</option>
-                <option>QI-2662</option>
-                <option>QI-2907</option>
-                <option>QI-3052</option>
-                <option>QI-3053</option>
-                <option>QI-3054</option>
-                <option>QI-3055</option>
-              </select>
-            </div>
+            <div class="full">
+              <label>Ubicacion de reparacion</label>
+<div class="location-type-buttons" role="tablist" aria-label="Tipo de ubicacion">
+  <button type="button" class="location-type-btn" data-location-type="autotanque">Autotanques</button>
+  <button type="button" class="location-type-btn" data-location-type="estacion">Estaciones</button>
+  <button type="button" class="location-type-btn" data-location-type="planta">Plantas</button>
+</div>
+<div id="autotanqueField" class="hidden location-select-field">
+  <label for="equipo">Economico unidad</label>
+  <select id="equipo" name="equipo" required>
+    <option value="">Selecciona economico...</option>
+    <option>QI-091</option>
+    <option>QI-144</option>
+    <option>QI-158</option>
+    <option>QI-159</option>
+    <option>QI-163</option>
+    <option>QI-170</option>
+    <option>QI-178</option>
+    <option>QI-179</option>
+    <option>QI-193</option>
+    <option>QI-201</option>
+    <option>QI-202</option>
+    <option>QI-769</option>
+    <option>QI-770</option>
+    <option>QI-799</option>
+    <option>QI-1396</option>
+    <option>QI-1397</option>
+    <option>QI-1439</option>
+    <option>QI-1697</option>
+    <option>QI-1698</option>
+    <option>QI-1699</option>
+    <option>QI-1700</option>
+    <option>QI-1701</option>
+    <option>QI-1703</option>
+    <option>QI-1752</option>
+    <option>QI-1823</option>
+    <option>QI-1927</option>
+    <option>QI-1934</option>
+    <option>QI-1943</option>
+    <option>QI-1944</option>
+    <option>QI-2029</option>
+    <option>QI-2129</option>
+    <option>QI-2130</option>
+    <option>QI-2131</option>
+    <option>QI-2134</option>
+    <option>QI-2329</option>
+    <option>QI-2330</option>
+    <option>QI-2357</option>
+    <option>QI-2338</option>
+    <option>QI-2418</option>
+    <option>QI-2456</option>
+    <option>QI-2536</option>
+    <option>QI-2648</option>
+    <option>QI-2662</option>
+    <option>QI-2907</option>
+    <option>QI-3052</option>
+    <option>QI-3053</option>
+    <option>QI-3054</option>
+    <option>QI-3055</option>
+  </select>
+</div>
+<div id="estacionField" class="hidden location-select-field">
+  <label for="estacion_select">Estacion</label>
+  <select id="estacion_select">
+    <option value="">Selecciona estacion...</option>
+    <option value="Estacion Sol">Estacion Sol</option>
+    <option value="Estacion Quero">Estacion Quero</option>
+    <option value="Estacion Los Angeles">Estacion Los Angeles</option>
+    <option value="Estacion Pena Flor">Estacion Pena Flor</option>
+    <option value="Estacion El Sauz">Estacion El Sauz</option>
+    <option value="Estacion San Ignacio">Estacion San Ignacio</option>
+    <option value="Estacion El Marquez">Estacion El Marquez</option>
+    <option value="Estacion Galeras">Estacion Galeras</option>
+    <option value="Estacion La Venta">Estacion La Venta</option>
+  </select>
+</div>
+<div id="plantaField" class="hidden location-select-field">
+  <label for="planta_select">Planta</label>
+  <select id="planta_select">
+    <option value="">Selecciona planta...</option>
+    <option>QUERO</option>
+    <option>PLUS</option>
+    <option>GALERAS</option>
+    <option>PEDRO ESCOBEDO</option>
+  </select>
+</div>
+</div>
             <div>
               <label for="marca">Marca</label>
               <input id="marca" name="marca" type="text" required />
@@ -130,13 +163,17 @@
             </div>
             <div class="full">
               <label for="pieza">Pieza cambiada</label>
-              <select id="pieza" name="pieza"></select>
-              <div class="piece-add-row">
-                <input id="pieza_cantidad" type="number" min="1" value="1" />
-                <button id="addPieceBtn" type="button" class="btn-secondary btn-compact">Agregar pieza</button>
-              </div>
-              <small class="field-help">Selecciona pieza, define cantidad y pulsa "Agregar pieza" (máximo 5 tipos de pieza).</small>
-              <div id="selectedPieces" class="selected-pieces" aria-live="polite"></div>
+<select id="pieza" name="pieza"></select>
+<div class="piece-add-row">
+  <input id="pieza_cantidad" type="number" min="1" value="1" />
+  <button id="addPieceBtn" type="button" class="btn-secondary btn-compact">Agregar pieza</button>
+</div>
+<div class="piece-custom-row">
+  <input id="pieza_personalizada" type="text" placeholder="Escribe una pieza nueva" />
+  <button id="addCustomPieceBtn" type="button" class="btn-secondary btn-compact">Agregar pieza nueva</button>
+</div>
+<small class="field-help">Selecciona pieza o escribe una nueva, define cantidad y pulsa agregar (maximo 5 tipos de pieza).</small>
+<div id="selectedPieces" class="selected-pieces" aria-live="polite"></div>
             </div>
             <div>
               <label for="cantidad">Cantidad total</label>
@@ -243,5 +280,7 @@
   <script src="assets/js/app.js"></script>
 </body>
 </html>
+
+
 
 

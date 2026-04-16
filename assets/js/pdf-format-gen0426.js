@@ -95,16 +95,6 @@
       alta: s.includes("alta") && s.includes("activo"),
     };
   }
-
-  function splitPieces(record) {
-    const parts = String(record.pieza || "")
-      .split(/[;,]/)
-      .map((x) => x.trim())
-      .filter(Boolean);
-    const rows = (parts.length ? parts : ["Sin pieza especificada"]).slice(0, 5);
-    return rows.map((p, i) => `${i + 1}° ${p}${i === 0 && Number(record.cantidad) > 1 ? ` (x${record.cantidad})` : ""}`);
-  }
-
   function splitPiecesV2(record) {
     const parts = String(record.pieza || "")
       .split(/[;,]/)
@@ -354,3 +344,4 @@
 
   window.maintenancePdfTemplate = { buildPdf, STYLE };
 })();
+

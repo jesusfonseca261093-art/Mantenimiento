@@ -2,6 +2,7 @@ const SUPABASE_URL = "https://iukhcmwqsxjybovkpxhm.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_Doj-L2g49RDaf1QFyE1Y9w_cqAs8Rbk";
     const TABLE_NAME = "registros_mantenimiento";
     const EVIDENCE_BUCKET = "evidencias_mantenimiento";
+    const DELETE_RECORDS_PASSWORD = "Gen2026!";
 
     const configNotice = document.getElementById("configNotice");
     const appSection = document.getElementById("appSection");
@@ -14,10 +15,19 @@ const SUPABASE_URL = "https://iukhcmwqsxjybovkpxhm.supabase.co";
     const refreshBtn = document.getElementById("refreshBtn");
     const exportBtn = document.getElementById("exportBtn");
     const clearBtn = document.getElementById("clearBtn");
+    const equipoSelect = document.getElementById("equipo");
+    const autotanqueField = document.getElementById("autotanqueField");
+    const estacionField = document.getElementById("estacionField");
+    const estacionSelect = document.getElementById("estacion_select");
+    const plantaField = document.getElementById("plantaField");
+    const plantaSelect = document.getElementById("planta_select");
+    const locationTypeButtons = Array.from(document.querySelectorAll(".location-type-btn"));
     const columnTabs = Array.from(document.querySelectorAll(".tab-btn"));
     const piezaSelect = document.getElementById("pieza");
+    const customPieceInput = document.getElementById("pieza_personalizada");
     const piezaCantidadInput = document.getElementById("pieza_cantidad");
     const addPieceBtn = document.getElementById("addPieceBtn");
+    const addCustomPieceBtn = document.getElementById("addCustomPieceBtn");
     const selectedPiecesEl = document.getElementById("selectedPieces");
     const cantidadInput = document.getElementById("cantidad");
     const evidenceInput = document.getElementById("evidencia");
@@ -34,6 +44,7 @@ const SUPABASE_URL = "https://iukhcmwqsxjybovkpxhm.supabase.co";
     horaInicioPreview.value = "";
     let currentRecords = [];
     let selectedPieces = [];
+    let currentLocationType = "";
 
     function isConfigured() {
       return !SUPABASE_URL.includes("PEGA_AQUI") && !SUPABASE_ANON_KEY.includes("PEGA_AQUI");
@@ -124,6 +135,53 @@ const SUPABASE_URL = "https://iukhcmwqsxjybovkpxhm.supabase.co";
       horaInicioPreview.value = getTimeHHMM(now);
     }
 
+    function setLocationType(type) {
+      currentLocationType = type || "";
+      locationTypeButtons.forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.locationType === currentLocationType);
+      });
+
+      autotanqueField.classList.add("hidden");
+      estacionField.classList.add("hidden");
+      plantaField.classList.add("hidden");
+      equipoSelect.disabled = true;
+      estacionSelect.disabled = true;
+      plantaSelect.disabled = true;
+      equipoSelect.required = false;
+      estacionSelect.required = false;
+      plantaSelect.required = false;
+
+      if (currentLocationType === "autotanque") {
+        autotanqueField.classList.remove("hidden");
+        equipoSelect.disabled = false;
+        equipoSelect.required = true;
+        return;
+      }
+
+      if (currentLocationType === "planta") {
+        plantaField.classList.remove("hidden");
+        plantaSelect.disabled = false;
+        plantaSelect.required = true;
+        return;
+      }
+
+      if (currentLocationType === "estacion") {
+        estacionField.classList.remove("hidden");
+        estacionSelect.disabled = false;
+        estacionSelect.required = true;
+      }
+    }
+
+    function resolveEquipoValue() {
+      if (currentLocationType === "estacion") {
+        return (estacionSelect.value || "").trim();
+      }
+      if (currentLocationType === "planta") {
+        return (plantaSelect.value || "").trim();
+      }
+      return (equipoSelect.value || "").trim();
+    }
+
     function buildPiecesCatalog() {
       return [
         "Medidor magnetel ROCHESTER",
@@ -192,32 +250,48 @@ const SUPABASE_URL = "https://iukhcmwqsxjybovkpxhm.supabase.co";
       updateTotalQuantity();
     }
 
-    function addPieceFromDropdown() {
-      const piece = (piezaSelect.value || "").trim();
-      if (!piece) return;
+    function addPieceByName(pieceName) {
+      const piece = (pieceName || "").trim();
+      if (!piece) {
+        setStatus("Selecciona o escribe una pieza para agregar.", true);
+        return false;
+      }
       const qty = Math.max(1, Number(piezaCantidadInput.value) || 1);
-      const existingIndex = selectedPieces.findIndex((item) => item.name === piece);
+      const existingIndex = selectedPieces.findIndex((item) => item.name.toLowerCase() === piece.toLowerCase());
       if (existingIndex >= 0) {
         selectedPieces[existingIndex].qty += qty;
       } else {
         if (selectedPieces.length >= 5) {
           setStatus("Máximo 5 piezas por formato.", true);
-          piezaSelect.value = "";
-          return;
+          return false;
         }
         selectedPieces.push({ name: piece, qty });
       }
-      piezaSelect.value = "";
       piezaCantidadInput.value = "1";
       renderSelectedPieces();
+      setStatus("");
+      return true;
+    }
+
+    function addPieceFromDropdown() {
+      const added = addPieceByName(piezaSelect.value);
+      if (added) piezaSelect.value = "";
+    }
+
+    function addCustomPiece() {
+      const added = addPieceByName(customPieceInput.value);
+      if (added) customPieceInput.value = "";
     }
 
     function resetCaptureForm() {
       maintenanceForm.reset();
       selectedPieces = [];
       piezaCantidadInput.value = "1";
+      piezaSelect.value = "";
+      customPieceInput.value = "";
       fechaInput.value = today;
       fechaFabricacionInput.value = "";
+      setLocationType("");
       refreshAutoPreview();
       renderSelectedPieces();
       previewGallery.innerHTML = "";
@@ -342,6 +416,23 @@ const SUPABASE_URL = "https://iukhcmwqsxjybovkpxhm.supabase.co";
       addPieceFromDropdown();
     });
 
+    addCustomPieceBtn.addEventListener("click", () => {
+      addCustomPiece();
+    });
+
+    customPieceInput.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      addCustomPiece();
+    });
+
+    locationTypeButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        setStatus("");
+        setLocationType(btn.dataset.locationType || "");
+      });
+    });
+
     selectedPiecesEl.addEventListener("click", (event) => {
       const chip = event.target.closest(".piece-chip");
       if (!chip) return;
@@ -388,6 +479,13 @@ const SUPABASE_URL = "https://iukhcmwqsxjybovkpxhm.supabase.co";
       const formData = new FormData(maintenanceForm);
       const record = Object.fromEntries(formData.entries());
       delete record.evidencia;
+      const resolvedEquipo = resolveEquipoValue();
+      if (!resolvedEquipo) {
+        if (previewTab && !previewTab.closed) previewTab.close();
+        setStatus("Selecciona la ubicacion de reparacion.", true);
+        return;
+      }
+      record.equipo = resolvedEquipo;
       const selectedPiecesList = getSelectedPieces();
       if (!selectedPiecesList.length) {
         if (previewTab && !previewTab.closed) previewTab.close();
@@ -479,6 +577,17 @@ const SUPABASE_URL = "https://iukhcmwqsxjybovkpxhm.supabase.co";
 
     clearBtn.addEventListener("click", async () => {
       if (!confirm("Seguro que deseas borrar todos los registros?")) return;
+
+      const typedPassword = prompt("Ingresa la contraseña para borrar todos los registros:");
+      if (typedPassword === null) {
+        setStatus("Borrado cancelado.");
+        return;
+      }
+      if (typedPassword.trim() !== DELETE_RECORDS_PASSWORD) {
+        setStatus("Contraseña incorrecta. No se borraron registros.", true);
+        return;
+      }
+
       const { error } = await client.from(TABLE_NAME).delete().not("id", "is", null);
       if (error) {
         setStatus(`Error al borrar: ${error.message}`, true);
@@ -494,9 +603,11 @@ const SUPABASE_URL = "https://iukhcmwqsxjybovkpxhm.supabase.co";
     } else {
       appSection.classList.remove("hidden");
       populatePiecesSelect();
+      setLocationType("");
       renderSelectedPieces();
       refreshAutoPreview();
       setInterval(refreshAutoPreview, 30000);
       applyColumnTab("all");
       refreshData();
     }
+
