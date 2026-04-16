@@ -1,5 +1,12 @@
 (() => {
-  const LOGO_CANDIDATES = ["img/Gen.png", "img/gen.png", "Gen.png", "gen.png"];
+  const LOGO_CANDIDATES = [
+    "assets/img/Gen.png",
+    "assets/img/gen.png",
+    "img/Gen.png",
+    "img/gen.png",
+    "Gen.png",
+    "gen.png",
+  ];
   let cachedLogoDataUrl = null;
 
   const STYLE = {

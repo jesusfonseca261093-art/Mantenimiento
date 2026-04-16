@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mantenimiento Industrial | Control de Cambios</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <header class="container hero">
+    <h1>Control de Cambios de Mantenimiento</h1>
+    <p class="subtitle">Sistema directo sin usuarios: registra, consulta, evidencia fotografica y PDF.</p>
+  </header>
+
+  <main class="container app-main">
+    <section id="configNotice" class="card notice hidden">
+      Configura SUPABASE_URL y SUPABASE_ANON_KEY antes de usar el sistema.
+    </section>
+
+    <section id="appSection" class="hidden">
+      <article class="card toolbar">
+        <div>
+          <h2 id="welcomeTitle">Panel General</h2>
+          <p id="roleLine">Captura, consulta y exporta informacion de mantenimiento.</p>
+        </div>
+        <div class="toolbar-actions">
+          <button id="refreshBtn" type="button" class="btn-secondary">Actualizar</button>
+        </div>
+      </article>
+
+      <div class="app-layout">
+        <section class="card">
+          <h2 align="center">Registros de Bitacora</h2>
+          <form id="maintenanceForm" class="maintenance-form">
+            <div>
+              <label for="fecha">Fecha de reparacion</label>
+              <input id="fecha" name="fecha" type="date" required />
+            </div>
+            <div>
+              <label for="fecha_fabricacion">Fecha de fabricacion</label>
+              <input id="fecha_fabricacion" name="fecha_fabricacion" type="date" />
+            </div>
+            <div>
+              <label for="tecnico">Tecnico</label>
+              <select id="tecnico" name="tecnico" required>
+                <option value="">Selecciona...</option>
+                <option>Eduardo Rubio Chavez</option>
+                <option>Gabriel Jesus figuera Zuñiga</option>
+                <option>Emmanuel Vega Vega</option>
+                <option>Daniel Velazquez Lozano</option>
+              </select>
+            </div>
+            <div>
+              <label for="equipo">Economico unidad:</label>
+              <select id="equipo" name="equipo" required>
+                <option value="">Selecciona...</option>
+                <option>QI-091</option>
+                <option>QI-144</option>
+                <option>QI-158</option>
+                <option>QI-159</option>
+                <option>QI-163</option>
+                <option>QI-170</option>
+                <option>QI-178</option>
+                <option>QI-179</option>
+                <option>QI-193</option>
+                <option>QI-201</option>
+                <option>QI-202</option>
+                <option>QI-769</option>
+                <option>QI-770</option>
+                <option>QI-799</option>
+                <option>QI-1396</option>
+                <option>QI-1397</option>
+                <option>QI-1439</option>
+                <option>QI-1697</option>
+                <option>QI-1698</option>
+                <option>QI-1699</option>
+                <option>QI-1700</option>
+                <option>QI-1701</option>
+                <option>QI-1703</option>
+                <option>QI-1752</option>
+                <option>QI-1823</option>
+                <option>QI-1927</option>
+                <option>QI-1934</option>
+                <option>QI-1943</option>
+                <option>QI-1944</option>
+                <option>QI-2029</option>
+                <option>QI-2129</option>
+                <option>QI-2130</option>
+                <option>QI-2131</option>
+                <option>QI-2134</option>
+                <option>QI-2329</option>
+                <option>QI-2330</option>
+                <option>QI-2357</option>
+                <option>QI-2338</option>
+                <option>QI-2418</option>
+                <option>QI-2456</option>
+                <option>QI-2536</option>
+                <option>QI-2648</option>
+                <option>QI-2662</option>
+                <option>QI-2907</option>
+                <option>QI-3052</option>
+                <option>QI-3053</option>
+                <option>QI-3054</option>
+                <option>QI-3055</option>
+              </select>
+            </div>
+            <div>
+              <label for="marca">Marca</label>
+              <input id="marca" name="marca" type="text" required />
+            </div>
+            <div>
+              <label for="modelo">Modelo</label>
+              <input id="modelo" name="modelo" type="text" required />
+            </div>
+            <div>
+              <label for="serie">Serie</label>
+              <input id="serie" name="serie" type="text" required />
+            </div>
+            <div>
+              <label for="folio_preview">Folio (automatico)</label>
+              <input id="folio_preview" type="text" readonly />
+            </div>
+            <div>
+              <label for="hora_inicio_preview">Hora de inicio (automatico)</label>
+              <input id="hora_inicio_preview" type="time" readonly />
+            </div>
+            <div>
+              <label for="hora_termino">Hora de termino</label>
+              <input id="hora_termino" name="hora_termino" type="time" required />
+            </div>
+            <div class="full">
+              <label for="pieza">Pieza cambiada</label>
+              <select id="pieza" name="pieza"></select>
+              <div class="piece-add-row">
+                <input id="pieza_cantidad" type="number" min="1" value="1" />
+                <button id="addPieceBtn" type="button" class="btn-secondary btn-compact">Agregar pieza</button>
+              </div>
+              <small class="field-help">Selecciona pieza, define cantidad y pulsa "Agregar pieza" (máximo 5 tipos de pieza).</small>
+              <div id="selectedPieces" class="selected-pieces" aria-live="polite"></div>
+            </div>
+            <div>
+              <label for="cantidad">Cantidad total</label>
+              <input id="cantidad" name="cantidad" type="number" min="1" value="1" required readonly />
+            </div>
+            <div>
+              <label for="estado">Tipo de mantenimiento</label>
+              <select id="estado" name="estado" required>
+                <option value="">Selecciona...</option>
+                <option>Preventivo: (Tareas programadas para evitar fallos)
+                  <option>Predictivo: (Monitoreo basado en condición)</option>
+                  <option>Correctivo: (Reparaciones tras una avería)</option>
+                  <option>Modificación / Mejora: (Instalación de componentes que no existían)</option>
+                  <option>Alta de Activo: (Para la instalación de equipos completamente nuevos)</option>
+                </option>
+
+
+              </select>
+            </div>
+            <div class="full">
+              <label for="evidencia">Evidencia fotografica</label>
+              <input id="evidencia" name="evidencia" type="file" accept="image/*" multiple />
+              <small class="field-help">Puedes subir hasta 4 fotos por registro.</small>
+            </div>
+            <div id="previewGallery" class="full preview-gallery hidden" aria-live="polite">
+            </div>
+            <div class="full">
+              <label for="notas">Notas</label>
+              <textarea id="notas" name="notas" placeholder="Detalles de la intervencion"></textarea>
+            </div>
+            <div class="full">
+              <button type="submit">Guardar registro y abrir formato de impresion</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="card history-panel">
+            <div class="history-topbar">
+              <h2>Historial</h2>
+              <div class="history-actions">
+                <button id="exportBtn" type="button" class="btn-secondary btn-compact">Descargar Excel</button>
+                <button id="clearBtn" type="button" class="btn-danger btn-compact">Borrar registros</button>
+              </div>
+            </div>
+
+          <div id="adminFilters" class="filters">
+            <div>
+              <label for="filterTecnico">Filtrar por tecnico</label>
+              <input id="filterTecnico" type="text" placeholder="Nombre tecnico" />
+            </div>
+            <div>
+              <label for="filterFrom">Fecha desde</label>
+              <input id="filterFrom" type="date" />
+            </div>
+            <div>
+              <label for="filterTo">Fecha hasta</label>
+              <input id="filterTo" type="date" />
+            </div>
+          </div>
+
+          <div class="column-tabs mobile-scroll" role="tablist" aria-label="Vista de columnas">
+            <button type="button" class="tab-btn active" data-tab="all">Todo</button>
+            <button type="button" class="tab-btn" data-tab="general">General</button>
+            <button type="button" class="tab-btn" data-tab="equipo">Equipo</button>
+            <button type="button" class="tab-btn" data-tab="mantenimiento">Mantenimiento</button>
+            <button type="button" class="tab-btn" data-tab="evidencia">Evidencia</button>
+          </div>
+            <div class="table-wrap history-table-wrap mobile-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th class="col-general">Fecha reparacion</th>
+                  <th class="col-general">Fecha fabricacion</th>
+                  <th class="col-general">Folio</th>
+                  <th class="col-general">OT</th>
+                  <th class="col-general">H. Inicio</th>
+                  <th class="col-general">H. Termino</th>
+                  <th class="col-general">Tecnico</th>
+                  <th class="col-equipo">Unidad</th>
+                  <th class="col-equipo">Marca</th>
+                  <th class="col-equipo">Modelo</th>
+                  <th class="col-equipo">Serie</th>
+                  <th class="col-mantenimiento">Pieza</th>
+                  <th class="col-mantenimiento">Cant.</th>
+                    <th class="col-mantenimiento">Tipo</th>
+                    <th class="col-evidencia">Evidencia</th>
+                    <th class="col-evidencia">Notas</th>
+                    <th class="col-evidencia">PDF</th>
+                  </tr>
+                </thead>
+                <tbody id="recordsBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <p id="statusMsg" class="status"></p>
+  </main>
+
+  <footer class="container">Desarrollado por Ing Jesus Fonseca.</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="assets/js/pdf-format-gen0426.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
+
