@@ -77,12 +77,22 @@
     }
   }
 
+  function normalizeText(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim();
+  }
+
   function parseType(estado) {
-    const s = String(estado || "").toLowerCase();
+    const s = normalizeText(estado);
     return {
       preventivo: s.includes("preventivo"),
       predictivo: s.includes("predictivo") || s.includes("revision"),
       correctivo: s.includes("correctivo"),
+      modificacion: s.includes("modific") || s.includes("mejora"),
+      alta: s.includes("alta") && s.includes("activo"),
     };
   }
 
@@ -187,6 +197,12 @@
     doc.text("Predictivo", 95, y);
     checkbox(doc, 120, y - 4.2, mt.correctivo);
     doc.text("Correctivo", 126, y);
+
+    y += 7;
+    checkbox(doc, 58, y - 4.2, mt.modificacion);
+    doc.text("Modificacion / Mejora", 64, y);
+    checkbox(doc, 123, y - 4.2, mt.alta);
+    doc.text("Alta de Activo", 129, y);
 
     y += 9;
     drawField(doc, "Tecnico:", record.tecnico || "-", 11, y, 200);

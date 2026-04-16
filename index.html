@@ -145,16 +145,13 @@
             <div>
               <label for="estado">Tipo de mantenimiento</label>
               <select id="estado" name="estado" required>
-                <option value="">Selecciona...</option>
-                <option>Preventivo: (Tareas programadas para evitar fallos)
-                  <option>Predictivo: (Monitoreo basado en condición)</option>
-                  <option>Correctivo: (Reparaciones tras una avería)</option>
-                  <option>Modificación / Mejora: (Instalación de componentes que no existían)</option>
-                  <option>Alta de Activo: (Para la instalación de equipos completamente nuevos)</option>
-                </option>
-
-
-              </select>
+  <option value="">Selecciona...</option>
+  <option value="Preventivo">Preventivo: (Tareas programadas para evitar fallos)</option>
+  <option value="Predictivo">Predictivo: (Monitoreo basado en condicion)</option>
+  <option value="Correctivo">Correctivo: (Reparaciones tras una averia)</option>
+  <option value="Modificacion / Mejora">Modificacion / Mejora: (Instalacion de componentes que no existian)</option>
+  <option value="Alta de Activo">Alta de Activo: (Instalacion de equipos completamente nuevos)</option>
+</select>
             </div>
             <div class="full">
               <label for="evidencia">Evidencia fotografica</label>
@@ -246,4 +243,5 @@
   <script src="assets/js/app.js"></script>
 </body>
 </html>
+
 
